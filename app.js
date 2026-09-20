@@ -9,7 +9,7 @@ function allPlaces(){return [...new Set(routes().flatMap(x=>[x.a,x.b]))].sort(jp
 function refreshFrom(){const p=allPlaces();setOptions(from,p,'出発地を選択');setOptions(to,p,'目的地を選択');showEmpty();}
 function showEmpty(){result.innerHTML='<div class="hint">機種・出発地・目的地を選択すると、直行実績または実績区間をつないだ推定ルートを表示します。</div>';}
 function edge(a,b){return routes().find(x=>(x.a===a&&x.b===b)||(x.a===b&&x.b===a));}
-function pathCandidates(start,goal,maxLegs=3){
+function pathCandidates(start,goal,maxLegs=6){
  const adj={};for(const r of routes()){(adj[r.a]??=[]).push([r.b,r]);(adj[r.b]??=[]).push([r.a,r]);}
  const found=[];
  function dfs(node,visited,legs,total){
@@ -27,9 +27,9 @@ function calculate(){const ac=aircraft.value,a=from.value,b=to.value;if(!ac||!a|
  const direct=edge(a,b);
  let html=`<div class="route">${a} ⇄ ${b}</div><div class="badge">${ac}</div>`;
  if(direct){html+=`<div class="label">直行実績の空輸時間目安</div><div class="big">約 ${fmt(direct.median)}</div><div class="grid"><div><span>実績件数</span><strong>${direct.count}便</strong></div><div><span>平均</span><strong>${fmt(direct.mean)}</strong></div><div><span>中央値</span><strong>${fmt(direct.median)}</strong></div><div><span>実績範囲</span><strong>${fmt(direct.min)} ～ ${fmt(direct.max)}</strong></div></div>`;}
- const candidates=pathCandidates(a,b,3).filter(p=>p.legs.length>=2).slice(0,3);
+ const candidates=pathCandidates(a,b,6).filter(p=>p.legs.length>=2).slice(0,3);
  if(candidates.length){html+=`<div class="subhead">${direct?'経由ルートの参考候補':'実績区間から算出した推定ルート'}</div>${candidates.map(candidateHtml).join('')}`;}
- if(!direct&&!candidates.length)html+='<div class="no-data">この条件では、直行実績または3レグ以内でつながる実績ルートがありません。</div>';
+ if(!direct&&!candidates.length)html+='<div class="no-data">この条件では、直行実績または6レグ以内でつながる実績ルートがありません。</div>';
  html+='<p class="note">表示時間は同一機種の過去実績中央値をレグごとに合計した純飛行時間です。給油・駐機等の地上時間は含みません。燃料搭載量や航続可否は判定していません。実際の運航では最新の気象、航空情報、機体性能、運航規程等を確認してください。</p>';result.innerHTML=html;
 }
 aircraft.addEventListener('change',refreshFrom);from.addEventListener('change',calculate);to.addEventListener('change',calculate);document.getElementById('swap').addEventListener('click',()=>{const a=from.value,b=to.value;if(!a||!b)return;from.value=b;to.value=a;calculate();});showEmpty();
