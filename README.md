@@ -19,5 +19,5 @@
 - 機種選択後、その機種の実績に存在する地点のみ候補になります。
 
 
-## v7
-- Excluded virtual tail numbers 1009 and 1014 in addition to 1028, 1017 and 1020.
+## v8
+- Numeric-only aircraft/type values are excluded from the database.
