@@ -21,3 +21,8 @@
 
 ## v8
 - Numeric-only aircraft/type values are excluded from the database.
+
+
+## v9 iPhone
+- iOS Safariのdatalist依存を廃止し、JavaScript製の検索候補メニューに変更。
+- 「仙」→「仙台空港」のような部分一致検索に対応。
