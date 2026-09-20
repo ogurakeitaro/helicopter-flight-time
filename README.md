@@ -26,3 +26,7 @@
 ## v9 iPhone
 - iOS Safariのdatalist依存を廃止し、JavaScript製の検索候補メニューに変更。
 - 「仙」→「仙台空港」のような部分一致検索に対応。
+
+
+## v15 iPhone aircraft fix
+- iPhoneで機種selectが「オプションなし」になる問題を避けるため、機種選択も独自のタップメニューに変更。

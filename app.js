@@ -1,7 +1,11 @@
 function fmt(m){m=Math.round(m);const h=Math.floor(m/60),mm=m%60;return h?`${h}時間${String(mm).padStart(2,'0')}分`:`${mm}分`;}
-const aircraft=document.getElementById('aircraft'),from=document.getElementById('from'),to=document.getElementById('to'),fromMenu=document.getElementById('fromMenu'),toMenu=document.getElementById('toMenu'),result=document.getElementById('result');
+const aircraft=document.getElementById('aircraft'),aircraftMenu=document.getElementById('aircraftMenu'),from=document.getElementById('from'),to=document.getElementById('to'),fromMenu=document.getElementById('fromMenu'),toMenu=document.getElementById('toMenu'),result=document.getElementById('result');
 const jpSort=(a,b)=>a.localeCompare(b,'ja',{numeric:true,sensitivity:'base'});const aircrafts=[...new Set(ROUTE_STATS.map(x=>x.aircraft))].sort(jpSort);aircraft.innerHTML='<option value="">機種を選択</option>'+aircrafts.map(v=>`<option>${v}</option>`).join('');
-const routes=()=>ROUTE_STATS.filter(x=>x.aircraft===aircraft.value);const places=()=>[...new Set(routes().flatMap(x=>[x.a,x.b]))].sort(jpSort);
+const routes=()=>ROUTE_STATS.filter(x=>x.aircraft===aircraft.value);
+function openAircraftMenu(){aircraftMenu.innerHTML=allAircraft.map(v=>`<button type="button" class="menu-item" data-value="${v}">${v}</button>`).join('');aircraftMenu.classList.add('open');}
+aircraft.addEventListener('click',openAircraftMenu);aircraft.addEventListener('touchend',e=>{e.preventDefault();openAircraftMenu();},{passive:false});
+function chooseAircraft(v){aircraft.value=v;aircraftMenu.classList.remove('open');aircraft.dispatchEvent(new Event('change'));}
+aircraftMenu.addEventListener('click',e=>{const b=e.target.closest('.menu-item');if(b)chooseAircraft(b.dataset.value);});aircraftMenu.addEventListener('touchend',e=>{const b=e.target.closest('.menu-item');if(!b)return;e.preventDefault();chooseAircraft(b.dataset.value);},{passive:false});const places=()=>[...new Set(routes().flatMap(x=>[x.a,x.b]))].sort(jpSort);
 function empty(){result.innerHTML='<div class="hint">機種を選び、出発地・目的地を文字入力してください。</div>'}
 function matches(q){q=q.trim().toLowerCase();const p=places();return q?p.filter(v=>v.toLowerCase().includes(q)).slice(0,30):p.slice(0,30)}
 function openMenu(input,menu){const vals=matches(input.value);menu.innerHTML=vals.length?vals.map(v=>`<button type="button" class="menu-item" data-value="${v}">${v}</button>`).join(''):'<div class="menu-empty">候補なし</div>';menu.classList.add('open')}
