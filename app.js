@@ -1,10 +1,11 @@
 function fmt(m){m=Math.round(m);const h=Math.floor(m/60),mm=m%60;return h?`${h}時間${String(mm).padStart(2,'0')}分`:`${mm}分`;}
 const aircraft=document.getElementById('aircraft'),from=document.getElementById('from'),to=document.getElementById('to'),result=document.getElementById('result');
-const allAircraft=[...new Set(ROUTE_STATS.map(x=>x.aircraft))].sort();
+const jpSort=(a,b)=>a.localeCompare(b,'ja',{numeric:true,sensitivity:'base'});
+const allAircraft=[...new Set(ROUTE_STATS.map(x=>x.aircraft))].sort(jpSort);
 function setOptions(el,items,placeholder){el.innerHTML=`<option value="">${placeholder}</option>`+items.map(v=>`<option>${v}</option>`).join('');}
 setOptions(aircraft,allAircraft,'機種を選択');
 const routes=()=>ROUTE_STATS.filter(x=>x.aircraft===aircraft.value);
-function allPlaces(){return [...new Set(routes().flatMap(x=>[x.a,x.b]))].sort();}
+function allPlaces(){return [...new Set(routes().flatMap(x=>[x.a,x.b]))].sort(jpSort);}
 function refreshFrom(){const p=allPlaces();setOptions(from,p,'出発地を選択');setOptions(to,p,'目的地を選択');showEmpty();}
 function showEmpty(){result.innerHTML='<div class="hint">機種・出発地・目的地を選択すると、直行実績または実績区間をつないだ推定ルートを表示します。</div>';}
 function edge(a,b){return routes().find(x=>(x.a===a&&x.b===b)||(x.a===b&&x.b===a));}
