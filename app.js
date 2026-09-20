@@ -6,7 +6,10 @@ function empty(){result.innerHTML='<div class="hint">機種を選び、出発地
 function matches(q){q=q.trim().toLowerCase();const p=places();return q?p.filter(v=>v.toLowerCase().includes(q)).slice(0,30):p.slice(0,30)}
 function openMenu(input,menu){const vals=matches(input.value);menu.innerHTML=vals.length?vals.map(v=>`<button type="button" class="menu-item" data-value="${v}">${v}</button>`).join(''):'<div class="menu-empty">候補なし</div>';menu.classList.add('open')}
 function bind(input,menu){input.addEventListener('focus',()=>openMenu(input,menu));input.addEventListener('input',()=>{openMenu(input,menu);calc(false)});menu.addEventListener('pointerdown',e=>{const b=e.target.closest('.menu-item');if(!b)return;e.preventDefault();input.value=b.dataset.value;menu.classList.remove('open');input.blur();calc(true)});}
-bind(from,fromMenu);bind(to,toMenu);document.addEventListener('pointerdown',e=>{if(!e.target.closest('.combo')){fromMenu.classList.remove('open');toMenu.classList.remove('open')}});
+bind(from,fromMenu);bind(to,toMenu);
+function bindClear(btn,input,menu){btn.addEventListener('click',()=>{input.value='';menu.classList.remove('open');result.innerHTML='<div class="hint">機種・出発地・目的地を選択すると、直行実績または実績区間をつないだ推定ルートを表示します。</div>';input.focus();openMenu(input,menu);});}
+bindClear(document.getElementById('clearFrom'),from,fromMenu);bindClear(document.getElementById('clearTo'),to,toMenu);
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.combo')){fromMenu.classList.remove('open');toMenu.classList.remove('open')}});
 aircraft.addEventListener('change',()=>{from.value='';to.value='';fromMenu.classList.remove('open');toMenu.classList.remove('open');empty()});
 function edge(a,b){return routes().find(x=>(x.a===a&&x.b===b)||(x.a===b&&x.b===a))}
 function paths(start,goal,maxLegs=6){const adj={};for(const r of routes()){(adj[r.a]??=[]).push([r.b,r]);(adj[r.b]??=[]).push([r.a,r])}const f=[];function dfs(n,seen,legs,total){if(legs.length>maxLegs)return;if(n===goal&&legs.length){f.push({legs:[...legs],total});return}if(legs.length===maxLegs)return;for(const [nx,r] of(adj[n]||[])){if(seen.has(nx))continue;seen.add(nx);legs.push({from:n,to:nx,s:r});dfs(nx,seen,legs,total+r.median);legs.pop();seen.delete(nx)}}dfs(start,new Set([start]),[],0);return f.sort((a,b)=>a.total-b.total||a.legs.length-b.legs.length)}
